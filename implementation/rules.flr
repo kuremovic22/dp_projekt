@@ -1,0 +1,219 @@
+moja_banka : banka_politika[
+  prag_prosjecne_place -> 1434.0,
+  fiksni_zasticeni_iznos -> 956.0,
+  postotak_kartice_preko -> 0.03,
+  max_dsti -> 0.45,
+  min_staz_odredeno -> 6
+].
+
+?K[ ukupna_primanja -> ?U ] :-
+  ?K:klijent[ prosjek_primanja_3m -> ?P, stalni_dodaci_3m -> ?D ],
+  ?U \is ?P + ?D.
+
+?K[ dodatna_obveza_kartice_prekoracenje -> ?X ] :-
+  moja_banka:banka_politika[ postotak_kartice_preko -> ?S ],
+  ?K:klijent[ prek_obracun_3m -> ?Prek, kartice_obracun_3m -> ?Kar ],
+  ?X \is ?S * (?Prek + ?Kar).
+
+?K[ postojece_obveze_ukupno -> ?O ] :-
+  ?K:klijent[
+    obveza_krediti -> ?Kred,
+    obveza_vidljivo_na_platnoj_listi -> ?Plat
+  ],
+  ?K[ dodatna_obveza_kartice_prekoracenje -> ?X ],
+  ?O \is ?Kred + ?Plat + ?X.
+
+?K[ raspolozivo_za_ratu -> ?Rasp ] :-
+  moja_banka:banka_politika[
+    prag_prosjecne_place -> ?Prag,
+    fiksni_zasticeni_iznos -> ?Fix
+  ],
+  ?K[ ukupna_primanja -> ?U ],
+  ?K[ postojece_obveze_ukupno -> ?O ],
+  ?U >= ?Prag,
+  ?Rasp \is ?U - ?Fix - ?O.
+
+?K[ raspolozivo_za_ratu -> ?Rasp ] :-
+  moja_banka:banka_politika[ prag_prosjecne_place -> ?Prag ],
+  ?K[ ukupna_primanja -> ?U ],
+  ?K[ postojece_obveze_ukupno -> ?O ],
+  ?U < ?Prag,
+  ?Cetvrtina \is ?U / 4,
+  ?Rasp \is ?Cetvrtina - ?O.
+
+?Z[ ukupna_primanja_ukupno -> ?U ] :-
+  ?Z:zahtjev[ duznik -> ?D ],
+  ?D[ ukupna_primanja -> ?U ],
+  \naf ?Z:zahtjev[ suduznik -> ?_ ].
+
+?Z[ ukupna_primanja_ukupno -> ?U ] :-
+  ?Z:zahtjev[ duznik -> ?D, suduznik -> ?S ],
+  ?D[ ukupna_primanja -> ?Ud ],
+  ?S[ ukupna_primanja -> ?Us ],
+  ?U \is ?Ud + ?Us.
+
+?Z[ postojece_obveze_ukupno -> ?O ] :-
+  ?Z:zahtjev[ duznik -> ?D ],
+  ?D[ postojece_obveze_ukupno -> ?O ],
+  \naf ?Z:zahtjev[ suduznik -> ?_ ].
+
+?Z[ postojece_obveze_ukupno -> ?O ] :-
+  ?Z:zahtjev[ duznik -> ?D, suduznik -> ?S ],
+  ?D[ postojece_obveze_ukupno -> ?Od ],
+  ?S[ postojece_obveze_ukupno -> ?Os ],
+  ?O \is ?Od + ?Os.
+
+?Z[ raspolozivo -> ?Rasp ] :-
+  moja_banka:banka_politika[
+    prag_prosjecne_place -> ?Prag,
+    fiksni_zasticeni_iznos -> ?Fix
+  ],
+  ?Z:zahtjev[ duznik -> ?D ],
+  \naf ?Z:zahtjev[ suduznik -> ?_ ],
+  ?D[ ukupna_primanja -> ?U ],
+  ?D[ postojece_obveze_ukupno -> ?O ],
+  ?U >= ?Prag,
+  ?Rasp \is ?U - ?Fix - ?O.
+
+?Z[ raspolozivo -> ?Rasp ] :-
+  moja_banka:banka_politika[ prag_prosjecne_place -> ?Prag ],
+  ?Z:zahtjev[ duznik -> ?D ],
+  \naf ?Z:zahtjev[ suduznik -> ?_ ],
+  ?D[ ukupna_primanja -> ?U ],
+  ?D[ postojece_obveze_ukupno -> ?O ],
+  ?U < ?Prag,
+  ?Cetvrtina \is ?U / 4,
+  ?Rasp \is ?Cetvrtina - ?O.
+
+?Z[ raspolozivo -> ?Rasp ] :-
+  moja_banka:banka_politika[
+    prag_prosjecne_place -> ?Prag,
+    fiksni_zasticeni_iznos -> ?Fix
+  ],
+  ?Z:zahtjev[ duznik -> ?D, suduznik -> ?S ],
+  ?D[ ukupna_primanja -> ?Ud ],
+  ?S[ ukupna_primanja -> ?Us ],
+  ?U \is ?Ud + ?Us,
+  ?D[ postojece_obveze_ukupno -> ?Od ],
+  ?S[ postojece_obveze_ukupno -> ?Os ],
+  ?O \is ?Od + ?Os,
+  ?U >= ?Prag,
+  ?Rasp \is ?U - ?Fix - ?O.
+
+?Z[ raspolozivo -> ?Rasp ] :-
+  moja_banka:banka_politika[ prag_prosjecne_place -> ?Prag ],
+  ?Z:zahtjev[ duznik -> ?D, suduznik -> ?S ],
+  ?D[ ukupna_primanja -> ?Ud ],
+  ?S[ ukupna_primanja -> ?Us ],
+  ?U \is ?Ud + ?Us,
+  ?D[ postojece_obveze_ukupno -> ?Od ],
+  ?S[ postojece_obveze_ukupno -> ?Os ],
+  ?O \is ?Od + ?Os,
+  ?U < ?Prag,
+  ?Cetvrtina \is ?U / 4,
+  ?Rasp \is ?Cetvrtina - ?O.
+
+?Z[ omjer_sposobnosti -> ?Om ] :-
+  ?Z:zahtjev[ kredit -> ?Kr ],
+  ?Kr:kredit_trazen[ rata -> ?Rata ],
+  ?Z[ raspolozivo -> ?Rasp ],
+  ?Om \is ?Rasp / ?Rata.
+
+?Z[ dsti -> ?DSTI ] :-
+  ?Z:zahtjev[ kredit -> ?Kr ],
+  ?Kr:kredit_trazen[ rata -> ?Rata ],
+  ?Z[ postojece_obveze_ukupno -> ?O ],
+  ?Z[ ukupna_primanja_ukupno -> ?U ],
+  ?DSTI \is (?O + ?Rata) / ?U.
+
+?Z[ sposobnost -> nesposoban ] :-
+  ?Z[ raspolozivo -> ?Rasp ],
+  ?Rasp =< 0.
+
+?Z[ sposobnost -> sposoban ] :-
+  ?Z[ omjer_sposobnosti -> ?Om ],
+  ?Om >= 1.
+
+?Z[ sposobnost -> djelomicno_sposoban ] :-
+  ?Z[ omjer_sposobnosti -> ?Om ],
+  ?Om < 1,
+  ?Om > 0.
+
+?Z[ zabrana -> osr ] :-
+  ?Z:zahtjev[ duznik -> ?D ],
+  ?D:klijent[ osr_status -> neuredan ].
+
+?Z[ zabrana -> osr ] :-
+  ?Z:zahtjev[ suduznik -> ?S ],
+  ?S:klijent[ osr_status -> neuredan ].
+
+?Z[ zabrana -> nedovoljan_staz ] :-
+  moja_banka:banka_politika[ min_staz_odredeno -> ?Min ],
+  ?Z:zahtjev[ duznik -> ?D ],
+  ?D:klijent[ tip_ugovora -> odredeno, staz_mjeseci -> ?St ],
+  ?St < ?Min.
+
+?Z[ odluka -> odbijen ] :-
+  ?Z[ zabrana -> ?_ ].
+
+?Z[ odluka -> odbijen ] :-
+  moja_banka:banka_politika[ max_dsti -> ?Max ],
+  ?Z[ dsti -> ?DSTI ],
+  ?DSTI > ?Max.
+
+?Z[ odluka -> odobren ] :-
+  moja_banka:banka_politika[ max_dsti -> ?Max ],
+  \naf ?Z[ zabrana -> ?_ ],
+  ?Z[ sposobnost -> sposoban ],
+  ?Z[ dsti -> ?DSTI ],
+  ?DSTI =< ?Max.
+
+?Z[ odluka -> uvjetno_odobren ] :-
+  moja_banka:banka_politika[ max_dsti -> ?Max ],
+  \naf ?Z[ zabrana -> ?_ ],
+  ?Z[ sposobnost -> djelomicno_sposoban ],
+  ?Z[ dsti -> ?DSTI ],
+  ?DSTI =< ?Max.
+
+?Z[ odluka -> odbijen ] :-
+  \naf ?Z[ zabrana -> ?_ ],
+  ?Z[ sposobnost -> nesposoban ].
+
+?Z[ odluka -> odbijen ] :-
+  \naf ?Z[ zabrana -> ?_ ],
+  ?Z[ sposobnost -> djelomicno_sposoban ],
+  moja_banka:banka_politika[ max_dsti -> ?Max ],
+  ?Z[ dsti -> ?DSTI ],
+  ?DSTI > ?Max.
+
+?Z[ razlog -> osr_neuredan ] :-
+  ?Z[ zabrana -> osr ].
+
+?Z[ razlog -> nedovoljan_staz ] :-
+  ?Z[ zabrana -> nedovoljan_staz ].
+
+?Z[ razlog -> dsti_previsok ] :-
+  moja_banka:banka_politika[ max_dsti -> ?Max ],
+  ?Z[ dsti -> ?DSTI ],
+  ?DSTI > ?Max.
+
+?Z[ razlog -> nema_raspolozivog_dohotka ] :-
+  ?Z[ sposobnost -> nesposoban ].
+
+?Z[ razlog -> nedovoljno_za_ratu ] :-
+  ?Z[ sposobnost -> djelomicno_sposoban ].
+
+?Z[ razlog -> zadovoljeni_uvjeti ] :-
+  ?Z[ odluka -> odobren ].
+
+?Z[ razlog -> djelomicno_zadovoljeni_uvjeti ] :-
+  ?Z[ odluka -> uvjetno_odobren ].
+
+?Z[ razlog -> kombinacija_razloga ] :-
+  ?Z[ odluka -> odbijen ],
+  \naf ?Z[ razlog -> osr_neuredan ],
+  \naf ?Z[ razlog -> nedovoljan_staz ],
+  \naf ?Z[ razlog -> dsti_previsok ],
+  \naf ?Z[ razlog -> nema_raspolozivog_dohotka ],
+	\naf ?Z[ razlog -> nedovoljno_za_ratu ].
+

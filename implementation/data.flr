@@ -1,0 +1,51 @@
+ana:klijent[
+  ime->Ana, prezime->Horvat, godiste->1990,
+  prosjek_primanja_3m->1400.0, stalni_dodaci_3m->0.0,
+  tip_ugovora->neodredeno, staz_mjeseci->36, osr_status->uredan,
+  obveza_krediti->150.0, obveza_vidljivo_na_platnoj_listi->0.0,
+  prek_obracun_3m->0.0, kartice_obracun_3m->1000.0
+].
+
+marko:klijent[
+  ime->Marko, prezime->Novak, godiste->1985,
+  prosjek_primanja_3m->900.0, stalni_dodaci_3m->0.0,
+  tip_ugovora->neodredeno, staz_mjeseci->60, osr_status->uredan,
+  obveza_krediti->0.0, obveza_vidljivo_na_platnoj_listi->0.0,
+  prek_obracun_3m->500.0, kartice_obracun_3m->0.0
+].
+
+iva:klijent[
+  ime->Iva, prezime->Kovac, godiste->1995,
+  prosjek_primanja_3m->1600.0, stalni_dodaci_3m->100.0,
+  tip_ugovora->odredeno, staz_mjeseci->4, osr_status->uredan,
+  obveza_krediti->200.0, obveza_vidljivo_na_platnoj_listi->50.0,
+  prek_obracun_3m->0.0, kartice_obracun_3m->0.0
+].
+
+petar:klijent[
+  ime->Petar, prezime->Babic, godiste->1992,
+  prosjek_primanja_3m->2000.0, stalni_dodaci_3m->0.0,
+  tip_ugovora->neodredeno, staz_mjeseci->24, osr_status->neuredan,
+  obveza_krediti->100.0, obveza_vidljivo_na_platnoj_listi->0.0,
+  prek_obracun_3m->0.0, kartice_obracun_3m->0.0
+].
+
+k1:kredit_trazen[ rata->400.0 ].
+k2:kredit_trazen[ rata->200.0 ].
+k3:kredit_trazen[ rata->500.0 ].
+k4:kredit_trazen[ rata->300.0 ].
+
+z1:zahtjev[ duznik->ana, kredit->k1 ].
+z2:zahtjev[ duznik->marko, kredit->k2 ].
+z3:zahtjev[ duznik->iva, kredit->k3 ].
+z4:zahtjev[ duznik->petar, kredit->k4 ].
+
+sara:klijent[
+  ime->Sara, prezime->Jovic, godiste->1991,
+  prosjek_primanja_3m->1200.0, stalni_dodaci_3m->50.0,
+  tip_ugovora->neodredeno, staz_mjeseci->48, osr_status->uredan,
+  obveza_krediti->0.0, obveza_vidljivo_na_platnoj_listi->0.0,
+  prek_obracun_3m->0.0, kartice_obracun_3m->0.0
+].
+
+z5:zahtjev[ duznik->marko, suduznik->sara, kredit->k3 ].

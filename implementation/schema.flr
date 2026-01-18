@@ -1,0 +1,46 @@
+osoba[
+  ime => \string,
+  prezime => \string,
+  godiste => \integer
+].
+
+klijent :: osoba[
+  prosjek_primanja_3m => \float,
+  stalni_dodaci_3m => \float,
+  tip_ugovora => \string,
+  staz_mjeseci => \integer,
+  osr_status => \string,
+
+  obveza_krediti => \float,
+  obveza_vidljivo_na_platnoj_listi => \float,
+  prek_obracun_3m => \float,
+  kartice_obracun_3m => \float
+].
+
+kredit_trazen[
+  rata => \float
+].
+
+zahtjev[
+  duznik => klijent,
+  kredit => kredit_trazen,
+
+  suduznik => klijent,
+
+  raspolozivo => \float,
+  omjer_sposobnosti => \float,
+  dsti => \float,
+  sposobnost => \string,
+  odluka => \string,
+  razlog => \string
+].
+
+banka_politika[
+  prag_prosjecne_place => \float,
+  fiksni_zasticeni_iznos => \float,
+  postotak_kartice_preko => \float,
+  max_dsti => \float,
+  min_staz_odredeno => \integer
+].
+
+
