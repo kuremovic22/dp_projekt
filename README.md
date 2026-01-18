@@ -71,7 +71,8 @@ Službene stranice alata:
 
 1. Pokrenuti Emacs iz terminala:
    ```bash
-   emacs```
+   emacs
+   ```
 2. Otvoriti glavnu datoteku: main.flr
 3. U Emacs učitati datoteku u Flora-2 okruženje pomoću:
      Ctrl+c, Ctrl+b
