@@ -88,9 +88,10 @@ Nakon učitavanja, sustav je spreman za izvođenje upita.
 
 ### Ukupna primanja klijenta
   ```prolog
-   ?K:klijent[ime->?Ime], ?K[ukupna_primanja->?U].```
+   ?K:klijent[ime->?Ime], ?K[ukupna_primanja->?U].
+```
 
-Postojeće obveze klijenta
+### Postojeće obveze klijenta
   ```prolog
    ?K:klijent[ime->?Ime], ?K[postojece_obveze_ukupno->?O].
 ```
